@@ -24,7 +24,7 @@ app.options('*', cors());
 app.use(express.urlencoded());
 app.use(express.json());
 
-const epicHandler = async (req, res): any => {
+const epicHandler = async (req: any, res: any): Promise<void> => {
     try {
         const content = await fetchDefaultEpicContent();
 
