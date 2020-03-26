@@ -2,12 +2,14 @@ import express from 'express';
 import awsServerlessExpress from 'aws-serverless-express';
 import { Context } from 'aws-lambda';
 import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup, renderToString } from 'react-dom/server';
 import { extractCritical } from 'emotion-server';
 import { renderHtmlDocument } from './utils/renderHtmlDocument';
 import { fetchDefaultEpicContent, fetchConfiguredEpicTests } from './api/contributionsApi';
 import { cacheAsync } from './lib/cache';
-import { ContributionsEpic, ContributionsEpicInit } from './components/ContributionsEpic';
+import { ContributionsEpic, meta } from './components/ContributionsEpic';
+import { Counter } from './components/Counter';
+// import ContributionsEpic from './components/ContributionsEpic';
 import {
     EpicTracking,
     EpicLocalisation,
@@ -90,24 +92,18 @@ const buildEpic = async (
     // and an accurate match between the view counts used for variant selection
     // and template rendering is not necessarily essential.
     const periodInWeeks = 52;
-    const numArticles = getArticleViewCountForWeeks(targeting.weeklyArticleHistory, periodInWeeks);
+    // const numArticles = getArticleViewCountForWeeks(targeting.weeklyArticleHistory, periodInWeeks);
 
-    const { html, css } = extractCritical(
-        renderToStaticMarkup(
-            <ContributionsEpic
-                variant={variant}
-                tracking={tracking}
-                localisation={localisation}
-                numArticles={numArticles}
-            />,
-        ),
-    );
+    // const { html, css } = extractCritical(renderToString(<Counter />));
+    const html = renderToString(<Counter />);
+    const { css } = extractCritical(renderToString(<Counter />));
 
     logTargeting(`Renders Epic true for targeting: ${JSON.stringify(targeting)}`);
 
     // TODO: determine if we need init code in a more elegant fashion
-    const needsInit = !!variant.showReminderFields;
-    const js = needsInit ? ContributionsEpicInit().toString() : '';
+    // const needsInit = !!variant.showReminderFields;
+    // const js = needsInit ? ContributionsEpicInit().toString() : '';
+    const js = '';
     return { html, css, js };
 };
 

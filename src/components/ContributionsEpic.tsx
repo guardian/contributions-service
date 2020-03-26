@@ -210,3 +210,13 @@ export const ContributionsEpic: React.FC<Props> = ({
         </section>
     );
 };
+
+export const meta = {
+    meta: {
+        name: 'Contributions Epic',
+        description: 'Lorem Ipsum',
+        owner: 'andre1050',
+        js: 'console.log("This is a test.")',
+        version: 0.1,
+    },
+};
