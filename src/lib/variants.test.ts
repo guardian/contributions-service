@@ -12,6 +12,7 @@ import {
     withinArticleViewedSettings,
 } from './variants';
 import { EpicTargeting } from '../components/ContributionsEpicTypes';
+import { factories } from '../factories';
 
 const testDefault: Test = {
     name: 'example-1',
@@ -31,28 +32,7 @@ const testDefault: Test = {
     userCohort: 'AllNonSupporters',
     isLiveBlog: false,
     hasCountryName: false,
-    variants: [
-        {
-            name: 'control-example-1',
-            heading: "We've got an announcement…",
-            paragraphs: [
-                '… on our progress as an organisation. In service of the escalating climate emergency, we have made an important decision – <a href="https://www.theguardian.com/media/2020/jan/29/guardian-to-ban-advertising-from-fossil-fuel-firms-climate-crisis#show-draft-epics">to renounce fossil fuel advertising</a>, becoming the first major global news organisation to institute an outright ban on taking money from companies that extract fossil fuels.',
-                '',
-            ],
-            highlightedText:
-                'Support the Guardian from as little as %%CURRENCY_SYMBOL%%1 – and it only takes a minute. Thank you.',
-            showTicker: false,
-            cta: {
-                text: 'Support The Guardian',
-                baseUrl: 'https://support.theguardian.com/contribute',
-            },
-            secondaryCta: {
-                text: 'Read our pledge',
-                baseUrl:
-                    'https://www.theguardian.com/environment/ng-interactive/2019/oct/16/the-guardians-climate-pledge-2019?INTCMP=pledge_Jan_2020',
-            },
-        },
-    ],
+    variants: [factories.variant.build()],
     highPriority: false,
     useLocalViewLog: false,
     articlesViewedSettings: {

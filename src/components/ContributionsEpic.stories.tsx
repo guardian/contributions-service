@@ -5,6 +5,7 @@ import { StorybookWrapper } from '../utils/StorybookWrapper';
 import testData from './ContributionsEpic.testData';
 import { Variant } from '../lib/variants';
 import { getArticleViewCountForWeeks } from '../lib/history';
+import { factories } from '../factories';
 
 export default {
     component: ContributionsEpic,
@@ -22,11 +23,13 @@ const numArticles = getArticleViewCountForWeeks(
 
 export const defaultStory = (): ReactElement => {
     // Epic content props
+
+    const variantData = factories.variant.build();
     const variant: Variant = {
         name: 'Test Epic',
-        heading: text('heading', testData.content.heading),
-        paragraphs: object('paragraphs', testData.content.paragraphs),
-        highlightedText: text('highlightedText', testData.content.highlightedText),
+        heading: text('heading', variantData.heading || ''),
+        paragraphs: object('paragraphs', variantData.paragraphs),
+        highlightedText: text('highlightedText', variantData.highlightedText || ''),
         showTicker: false,
     };
 
@@ -62,13 +65,18 @@ defaultStory.story = { name: 'Default epic' };
 
 export const backgroundImageStory = (): ReactElement => {
     // Epic content props
+    const variantData = factories.variant.build({
+        backgroundImageUrl:
+            'https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1701&q=80',
+    });
+
     const variant: Variant = {
         name: 'Test Epic',
-        heading: text('heading', testData.content.heading),
-        paragraphs: object('paragraphs', testData.content.paragraphs),
-        highlightedText: text('highlightedText', testData.content.highlightedText),
+        heading: text('heading', variantData.heading || ''),
+        paragraphs: object('paragraphs', variantData.paragraphs),
+        highlightedText: text('highlightedText', variantData.highlightedText || ''),
         showTicker: false,
-        backgroundImageUrl: text('backgroundImageUrl', testData.content.backgroundImageUrl),
+        backgroundImageUrl: text('backgroundImageUrl', variantData.backgroundImageUrl || ''),
     };
 
     // Epic metadata props
@@ -103,15 +111,16 @@ backgroundImageStory.story = { name: 'Epic with an image' };
 
 export const secondaryButtonStory = (): ReactElement => {
     // Epic content props
+    const variantData = factories.variant.build();
     const variant: Variant = {
         name: 'Test Epic',
-        heading: text('heading', testData.content.heading),
-        paragraphs: object('paragraphs', testData.content.paragraphs),
-        highlightedText: text('highlightedText', testData.content.highlightedText),
+        heading: text('heading', variantData.heading || ''),
+        paragraphs: object('paragraphs', variantData.paragraphs),
+        highlightedText: text('highlightedText', variantData.highlightedText || ''),
         showTicker: false,
         secondaryCta: {
-            text: text('secondaryCta.text', testData.content.secondaryCta.text),
-            baseUrl: text('secondaryCta.baseUrl', testData.content.secondaryCta.baseUrl),
+            text: text('secondaryCta.text', variantData.secondaryCta?.text || ''),
+            baseUrl: text('secondaryCta.baseUrl', variantData.secondaryCta?.baseUrl || ''),
         },
     };
 
