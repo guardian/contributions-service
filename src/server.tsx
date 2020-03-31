@@ -7,7 +7,7 @@ import { extractCritical } from 'emotion-server';
 import { renderHtmlDocument } from './utils/renderHtmlDocument';
 import { fetchDefaultEpicContent, fetchConfiguredEpicTests } from './api/contributionsApi';
 import { cacheAsync } from './lib/cache';
-import ContributionsEpic from './components/ContributionsEpic';
+import { epic, SlotComponent } from './components/ContributionsEpic';
 import {
     EpicTracking,
     EpicLocalisation,
@@ -27,7 +27,6 @@ const schemaPath = path.join(__dirname, 'schemas', 'epicPayload.schema.json');
 const epicPayloadSchema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
 console.log('Loaded epic payload JSON schema');
 
-// Use middleware
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 
@@ -35,7 +34,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 app.options('*', cors());
 
-// Logging
+// Log responses
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.on('finish', () =>
         console.log(
@@ -55,58 +54,33 @@ app.get('/healthcheck', (req: express.Request, res: express.Response) => {
     res.send('OK');
 });
 
-interface Epic {
+interface Response {
     html: string;
     css: string;
     js: string;
 }
 
-interface ComponentDescriptor {
-    name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Component: React.FC<any>;
-    getInitScript: Function;
-}
-
 const fiveMinutes = 60 * 5;
 const [, fetchDefaultEpicContentCached] = cacheAsync(fetchDefaultEpicContent, fiveMinutes);
 
-const logTargeting = (message: string): void => {
-    if (process.env.LOG_TARGETING === 'true') {
-        console.log(message);
-    }
-};
-
-// Extract the HTML/CSS/JS? of a component
-const extractComponentData = (componentDescriptor: ComponentDescriptor, props: unknown): Epic => {
-    const { Component, getInitScript } = componentDescriptor;
-    const { html, css } = extractCritical(renderToStaticMarkup(<Component {...props} />));
-    const js = getInitScript ? getInitScript(props) : undefined;
+const asResponse = (component: SlotComponent): Response => {
+    const { html, css } = extractCritical(renderToStaticMarkup(component.component));
 
     return {
+        js: component.js,
         html,
         css,
-        js,
     };
 };
 
-// Return the HTML and CSS from rendering the Epic to static markup
 const buildEpic = async (
     tracking: EpicTracking,
     localisation: EpicLocalisation,
     targeting: EpicTargeting,
-): Promise<Epic | null> => {
+): Promise<Response | null> => {
     const variant = await fetchDefaultEpicContentCached();
 
-    // TESTING ONLY
-    // variant.showReminderFields = {
-    //     reminderDate: '2020-05-18T09:30:00',
-    //     reminderDateAsString: 'May',
-    // };
-
-    // Don't render the Epic if our targeting checks fail
     if (shouldNotRenderEpic(targeting)) {
-        logTargeting(`Renders Epic false for targeting: ${JSON.stringify(targeting)}`);
         return null;
     }
 
@@ -125,11 +99,7 @@ const buildEpic = async (
         numArticles,
     };
 
-    // Extract HTML/CSS/JS for the component
-    const { html, css, js } = extractComponentData(ContributionsEpic, props);
-
-    logTargeting(`Renders Epic true for targeting: ${JSON.stringify(targeting)}`);
-    return { html, css, js };
+    return asResponse(epic(props));
 };
 
 class ValidationError extends Error {}

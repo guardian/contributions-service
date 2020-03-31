@@ -174,7 +174,7 @@ const EpicBody: React.FC<BodyProps> = ({ variant, countryCode, numArticles }: Bo
     );
 };
 
-export const ContributionsEpic: React.FC<Props> = ({
+export const EpicComponent: React.FC<Props> = ({
     variant,
     tracking,
     localisation,
@@ -240,19 +240,24 @@ export const ContributionsEpic: React.FC<Props> = ({
     );
 };
 
-export default {
-    name: 'Components/ContributionsEpic',
-    Component: ContributionsEpic,
-    getInitScript: (props: Props): string | undefined => {
-        if (props.variant.showReminderFields) {
-            const contributionsReminderUrl =
-                process.env.NODE_ENV === 'production'
-                    ? 'https://contribution-reminders.support.guardianapis.com/remind-me'
-                    : 'https://contribution-reminders-code.support.guardianapis.com/remind-me';
-            const initScript = ContributionsEpicInit.toString();
-            return initScript.replace(/%%CONTRIBUTIONS_REMINDER_URL%%/g, contributionsReminderUrl);
-        }
+export interface SlotComponent {
+    component: JSX.Element;
+    js: string;
+}
 
-        return undefined;
-    },
+export const epic = (props: Props): SlotComponent => {
+    let js = '';
+    if (props.variant.showReminderFields) {
+        const contributionsReminderUrl =
+            process.env.NODE_ENV === 'production'
+                ? 'https://contribution-reminders.support.guardianapis.com/remind-me'
+                : 'https://contribution-reminders-code.support.guardianapis.com/remind-me';
+        const initScript = ContributionsEpicInit.toString();
+        js = initScript.replace(/%%CONTRIBUTIONS_REMINDER_URL%%/g, contributionsReminderUrl);
+    }
+
+    return {
+        component: <EpicComponent {...props} />,
+        js,
+    };
 };
