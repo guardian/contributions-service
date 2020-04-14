@@ -23,6 +23,8 @@ import * as path from 'path';
 import { Test, findTestAndVariant, withinMaxViews } from './lib/variants';
 import { getArticleViewCountForWeeks } from './lib/history';
 import { buildCampaignCode } from './lib/tracking';
+import { Counter } from './components/Counter';
+import * as babel from 'babel-standalone';
 
 const schemaPath = path.join(__dirname, 'schemas', 'epicPayload.schema.json');
 const epicPayloadSchema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
@@ -312,6 +314,25 @@ app.post(
         }
 
         res.send('thanks');
+    },
+);
+
+app.get(
+    '/component',
+    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        try {
+            // console.log('=== COMPONENT: ');
+            // console.log(Counter.toString());
+            let component = babel.transform(Counter, { presets: ['react', 'es2015'] }).code;
+            component = component.replace('"use strict";', '').trim();
+            res.send({
+                name: 'Counter',
+                version: 0.1,
+                component,
+            });
+        } catch (error) {
+            next(error);
+        }
     },
 );
 

@@ -30,6 +30,7 @@
     "@storybook/addon-knobs": "^5.3.8",
     "@storybook/preset-typescript": "^1.2.0",
     "aws-serverless-express": "^3.3.6",
+    "babel-standalone": "^6.26.0",
     "cors": "^2.8.5",
     "emotion": "^10.0.27",
     "emotion-server": "^10.0.27",
