@@ -7,7 +7,7 @@ import {
 import { shouldThrottle, shouldNotRenderEpic } from '../lib/targeting';
 import { getArticleViewCountForWeeks } from '../lib/history';
 import { getCountryName, countryCodeToCountryGroupId } from '../lib/geolocation';
-import { isRecentOneOffContributor } from '../lib/dates';
+import { hasSectionOrTags, getUserCohorts } from './filters';
 
 interface ArticlesViewedSettings {
     minViews: number;
@@ -77,7 +77,7 @@ export interface EpicTests {
     tests: Test[];
 }
 
-interface Filter {
+export interface Filter {
     id: string;
     test: (test: Test, targeting: EpicTargeting) => boolean;
 }
@@ -86,56 +86,56 @@ export const selectVariant = (test: Test, mvtId: number): Variant => {
     return test.variants[mvtId % test.variants.length];
 };
 
-export const getUserCohorts = (targeting: EpicTargeting): UserCohort[] => {
-    const { showSupportMessaging, isRecurringContributor } = targeting;
+// export const getUserCohorts = (targeting: EpicTargeting): UserCohort[] => {
+//     const { showSupportMessaging, isRecurringContributor } = targeting;
 
-    const lastOneOffContributionDate = targeting.lastOneOffContributionDate
-        ? new Date(targeting.lastOneOffContributionDate)
-        : undefined;
+//     const lastOneOffContributionDate = targeting.lastOneOffContributionDate
+//         ? new Date(targeting.lastOneOffContributionDate)
+//         : undefined;
 
-    // User is a current supporter if she has a subscription or a recurring
-    // donation or has made a one-off contribution in the past 3 months.
-    const isSupporter =
-        !showSupportMessaging ||
-        isRecurringContributor ||
-        isRecentOneOffContributor(lastOneOffContributionDate);
+//     // User is a current supporter if she has a subscription or a recurring
+//     // donation or has made a one-off contribution in the past 3 months.
+//     const isSupporter =
+//         !showSupportMessaging ||
+//         isRecurringContributor ||
+//         isRecentOneOffContributor(lastOneOffContributionDate);
 
-    // User is a past-contributor if she doesn't have an active subscription
-    // or recurring donation, but has made a one-off donation longer than 3
-    // months ago.
-    const isPastContributor =
-        !isSupporter &&
-        lastOneOffContributionDate &&
-        !isRecentOneOffContributor(lastOneOffContributionDate);
+//     // User is a past-contributor if she doesn't have an active subscription
+//     // or recurring donation, but has made a one-off donation longer than 3
+//     // months ago.
+//     const isPastContributor =
+//         !isSupporter &&
+//         lastOneOffContributionDate &&
+//         !isRecentOneOffContributor(lastOneOffContributionDate);
 
-    if (isPastContributor) {
-        return ['PostAskPauseSingleContributors', 'AllNonSupporters', 'Everyone'];
-    } else if (isSupporter) {
-        return ['AllExistingSupporters', 'Everyone'];
-    }
+//     if (isPastContributor) {
+//         return ['PostAskPauseSingleContributors', 'AllNonSupporters', 'Everyone'];
+//     } else if (isSupporter) {
+//         return ['AllExistingSupporters', 'Everyone'];
+//     }
 
-    return ['AllNonSupporters', 'Everyone'];
-};
+//     return ['AllNonSupporters', 'Everyone'];
+// };
 
-export const hasSectionOrTags: Filter = {
-    id: 'hasSectionOrTags',
-    test: (test, targeting) => {
-        const cleanedTags = test.tagIds.filter(tagId => tagId !== '');
+// export const hasSectionOrTags: Filter = {
+//     id: 'hasSectionOrTags',
+//     test: (test, targeting) => {
+//         const cleanedTags = test.tagIds.filter(tagId => tagId !== '');
 
-        if (cleanedTags.length === 0 && test.sections.length === 0) {
-            return true;
-        }
+//         if (cleanedTags.length === 0 && test.sections.length === 0) {
+//             return true;
+//         }
 
-        const intersectingTags = cleanedTags.filter(tagId =>
-            targeting.tags.map(tag => tag.id).includes(tagId),
-        );
+//         const intersectingTags = cleanedTags.filter(tagId =>
+//             targeting.tags.map(tag => tag.id).includes(tagId),
+//         );
 
-        const hasSection = test.sections.includes(targeting.sectionName);
-        const hasTags = intersectingTags.length > 0;
+//         const hasSection = test.sections.includes(targeting.sectionName);
+//         const hasTags = intersectingTags.length > 0;
 
-        return hasSection || hasTags;
-    },
-};
+//         return hasSection || hasTags;
+//     },
+// };
 
 export const excludeSection: Filter = {
     id: 'excludeSection',

@@ -1,10 +1,10 @@
 import {
     findTestAndVariant,
-    getUserCohorts,
+    // getUserCohorts,
     Test,
     hasCountryCode,
     matchesCountryGroups,
-    hasSectionOrTags,
+    // hasSectionOrTags,
     excludeSection,
     inCorrectCohort,
     excludeTags,
@@ -17,9 +17,9 @@ import {
     isNotExpired,
 } from './variants';
 import { EpicTargeting } from '../components/ContributionsEpicTypes';
-import { withNowAs } from '../utils/withNowAs';
+// import { withNowAs } from '../utils/withNowAs';
 
-const testDefault: Test = {
+export const testDefault: Test = {
     name: 'example-1',
     isOn: true,
     locations: [],
@@ -67,7 +67,7 @@ const testDefault: Test = {
     },
 };
 
-const targetingDefault: EpicTargeting = {
+export const targetingDefault: EpicTargeting = {
     contentType: 'Article',
     sectionName: 'environment',
     shouldHideReaderRevenue: false,
@@ -80,58 +80,58 @@ const targetingDefault: EpicTargeting = {
     mvtId: 2,
 };
 
-describe('getUserCohort', () => {
-    it('should return "AllNonSupporters" correctly', () => {
-        const targeting1 = {
-            ...targetingDefault,
-            showSupportMessaging: true,
-            isRecurringContributor: false,
-            lastOneOffContributionDate: undefined,
-        };
-        const got1 = getUserCohorts(targeting1);
-        expect(got1).toEqual(['AllNonSupporters', 'Everyone']);
-    });
+// describe('getUserCohort', () => {
+//     it('should return "AllNonSupporters" correctly', () => {
+//         const targeting1 = {
+//             ...targetingDefault,
+//             showSupportMessaging: true,
+//             isRecurringContributor: false,
+//             lastOneOffContributionDate: undefined,
+//         };
+//         const got1 = getUserCohorts(targeting1);
+//         expect(got1).toEqual(['AllNonSupporters', 'Everyone']);
+//     });
 
-    it('should return "AllExistingSupporters" correctly', () => {
-        const now = new Date('2020-03-31T12:30:00');
-        const twoMonthsAgo = new Date(now).setMonth(now.getMonth() - 2);
+//     it('should return "AllExistingSupporters" correctly', () => {
+//         const now = new Date('2020-03-31T12:30:00');
+//         const twoMonthsAgo = new Date(now).setMonth(now.getMonth() - 2);
 
-        const targeting1: EpicTargeting = {
-            ...targetingDefault,
-            isRecurringContributor: true,
-        };
-        const got1 = getUserCohorts(targeting1);
-        expect(got1).toEqual(['AllExistingSupporters', 'Everyone']);
+//         const targeting1: EpicTargeting = {
+//             ...targetingDefault,
+//             isRecurringContributor: true,
+//         };
+//         const got1 = getUserCohorts(targeting1);
+//         expect(got1).toEqual(['AllExistingSupporters', 'Everyone']);
 
-        const targeting2: EpicTargeting = {
-            ...targetingDefault,
-            showSupportMessaging: false,
-        };
-        const got2 = getUserCohorts(targeting2);
-        expect(got2).toEqual(['AllExistingSupporters', 'Everyone']);
+//         const targeting2: EpicTargeting = {
+//             ...targetingDefault,
+//             showSupportMessaging: false,
+//         };
+//         const got2 = getUserCohorts(targeting2);
+//         expect(got2).toEqual(['AllExistingSupporters', 'Everyone']);
 
-        const targeting3: EpicTargeting = {
-            ...targetingDefault,
-            lastOneOffContributionDate: twoMonthsAgo,
-        };
-        const got3 = withNowAs(now, () => getUserCohorts(targeting3));
-        expect(got3).toEqual(['AllExistingSupporters', 'Everyone']);
-    });
+//         const targeting3: EpicTargeting = {
+//             ...targetingDefault,
+//             lastOneOffContributionDate: twoMonthsAgo,
+//         };
+//         const got3 = withNowAs(now, () => getUserCohorts(targeting3));
+//         expect(got3).toEqual(['AllExistingSupporters', 'Everyone']);
+//     });
 
-    it('should return "PostAskPauseSingleContributors" correctly', () => {
-        const now = new Date('2020-03-31T12:30:00');
-        const fourMonthsAgo = new Date(now).setMonth(now.getMonth() - 4);
+//     it('should return "PostAskPauseSingleContributors" correctly', () => {
+//         const now = new Date('2020-03-31T12:30:00');
+//         const fourMonthsAgo = new Date(now).setMonth(now.getMonth() - 4);
 
-        const targeting1: EpicTargeting = {
-            ...targetingDefault,
-            showSupportMessaging: true,
-            isRecurringContributor: false,
-            lastOneOffContributionDate: fourMonthsAgo,
-        };
-        const got1 = withNowAs(now, () => getUserCohorts(targeting1));
-        expect(got1).toEqual(['PostAskPauseSingleContributors', 'AllNonSupporters', 'Everyone']);
-    });
-});
+//         const targeting1: EpicTargeting = {
+//             ...targetingDefault,
+//             showSupportMessaging: true,
+//             isRecurringContributor: false,
+//             lastOneOffContributionDate: fourMonthsAgo,
+//         };
+//         const got1 = withNowAs(now, () => getUserCohorts(targeting1));
+//         expect(got1).toEqual(['PostAskPauseSingleContributors', 'AllNonSupporters', 'Everyone']);
+//     });
+// });
 
 describe('find variant', () => {
     it('should find the correct variant for test and targeting data', () => {
@@ -212,89 +212,89 @@ describe('variant filters', () => {
         expect(got2).toBe(false);
     });
 
-    it('should filter by required sections or tags', () => {
-        // return true if section matches
-        const test1: Test = {
-            ...testDefault,
-            sections: ['environment'],
-        };
-        const targeting1: EpicTargeting = {
-            ...targetingDefault,
-            sectionName: 'environment',
-        };
-        const got1 = hasSectionOrTags.test(test1, targeting1);
-        expect(got1).toBe(true);
+    // it('should filter by required sections or tags', () => {
+    //     // return true if section matches
+    //     const test1: Test = {
+    //         ...testDefault,
+    //         sections: ['environment'],
+    //     };
+    //     const targeting1: EpicTargeting = {
+    //         ...targetingDefault,
+    //         sectionName: 'environment',
+    //     };
+    //     const got1 = hasSectionOrTags.test(test1, targeting1);
+    //     expect(got1).toBe(true);
 
-        // return false if section doesn't match and no tags defined
-        const test2: Test = {
-            ...testDefault,
-            sections: ['environment'],
-        };
-        const targeting2: EpicTargeting = {
-            ...targetingDefault,
-            sectionName: 'business',
-        };
-        const got2 = hasSectionOrTags.test(test2, targeting2);
-        expect(got2).toBe(false);
+    //     // return false if section doesn't match and no tags defined
+    //     const test2: Test = {
+    //         ...testDefault,
+    //         sections: ['environment'],
+    //     };
+    //     const targeting2: EpicTargeting = {
+    //         ...targetingDefault,
+    //         sectionName: 'business',
+    //     };
+    //     const got2 = hasSectionOrTags.test(test2, targeting2);
+    //     expect(got2).toBe(false);
 
-        // return true if sections don't match but tags match
-        const tags3 = [
-            {
-                id: 'environment/series/the-polluters',
-                type: 'tone',
-            },
-        ];
-        const test3: Test = {
-            ...testDefault,
-            sections: ['environment'],
-            tagIds: tags3.map(tag => tag.id),
-        };
-        const targeting3: EpicTargeting = {
-            ...targetingDefault,
-            sectionName: 'business',
-            tags: tags3,
-        };
-        const got3 = hasSectionOrTags.test(test3, targeting3);
-        expect(got3).toBe(true);
+    //     // return true if sections don't match but tags match
+    //     const tags3 = [
+    //         {
+    //             id: 'environment/series/the-polluters',
+    //             type: 'tone',
+    //         },
+    //     ];
+    //     const test3: Test = {
+    //         ...testDefault,
+    //         sections: ['environment'],
+    //         tagIds: tags3.map(tag => tag.id),
+    //     };
+    //     const targeting3: EpicTargeting = {
+    //         ...targetingDefault,
+    //         sectionName: 'business',
+    //         tags: tags3,
+    //     };
+    //     const got3 = hasSectionOrTags.test(test3, targeting3);
+    //     expect(got3).toBe(true);
 
-        // return false if neither sections or tags match
-        const tags4 = [
-            {
-                id: 'environment/series/the-polluters',
-                type: 'tone',
-            },
-        ];
-        const test4: Test = {
-            ...testDefault,
-            sections: ['environment'],
-            tagIds: tags4.map(tag => tag.id),
-        };
-        const targeting4: EpicTargeting = {
-            ...targetingDefault,
-            sectionName: 'business',
-            tags: [
-                {
-                    id: 'business/some-business-tag',
-                    type: 'tone',
-                },
-            ],
-        };
-        const got4 = hasSectionOrTags.test(test4, targeting4);
-        expect(got4).toBe(false);
+    //     // return false if neither sections or tags match
+    //     const tags4 = [
+    //         {
+    //             id: 'environment/series/the-polluters',
+    //             type: 'tone',
+    //         },
+    //     ];
+    //     const test4: Test = {
+    //         ...testDefault,
+    //         sections: ['environment'],
+    //         tagIds: tags4.map(tag => tag.id),
+    //     };
+    //     const targeting4: EpicTargeting = {
+    //         ...targetingDefault,
+    //         sectionName: 'business',
+    //         tags: [
+    //             {
+    //                 id: 'business/some-business-tag',
+    //                 type: 'tone',
+    //             },
+    //         ],
+    //     };
+    //     const got4 = hasSectionOrTags.test(test4, targeting4);
+    //     expect(got4).toBe(false);
 
-        // return true if no section or tag requirements
-        const test5: Test = {
-            ...testDefault,
-            sections: [],
-            tagIds: [],
-        };
-        const targeting5: EpicTargeting = {
-            ...targetingDefault,
-            sectionName: 'business',
-        };
-        const got5 = hasSectionOrTags.test(test5, targeting5);
-        expect(got5).toBe(true);
-    });
+    //     // return true if no section or tag requirements
+    //     const test5: Test = {
+    //         ...testDefault,
+    //         sections: [],
+    //         tagIds: [],
+    //     };
+    //     const targeting5: EpicTargeting = {
+    //         ...targetingDefault,
+    //         sectionName: 'business',
+    //     };
+    //     const got5 = hasSectionOrTags.test(test5, targeting5);
+    //     expect(got5).toBe(true);
+    // });
 
     it('should filter by excluded sections', () => {
         const test1: Test = { ...testDefault, excludedSections: ['environment'] };
