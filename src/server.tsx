@@ -54,14 +54,20 @@ interface Response {
     js: string;
     meta: EpicTestTracking;
     debug?: Debug;
+    props?: any;
 }
 
 const [, fetchConfiguredEpicTestsCached] = cacheAsync(fetchConfiguredEpicTests, 60);
 
-const asResponse = (component: JsComponent, meta: EpicTestTracking, debug?: Debug): Response => {
+const asResponse = (
+    component: JsComponent,
+    meta: EpicTestTracking,
+    debug?: Debug,
+    props?: any,
+): Response => {
     const { el, js } = component;
     const { html, css } = extractCritical(renderToStaticMarkup(el));
-    return { html, css, js, meta, debug };
+    return { html, css, js, meta, debug, props };
 };
 
 const buildEpic = async (
@@ -93,6 +99,12 @@ const buildEpic = async (
 
     const { test, variant } = result.result;
 
+    variant.showReminderFields = {
+        reminderCTA: 'Remind me in June',
+        reminderDate: '2020-05-18T09:30:00',
+        reminderDateAsString: 'May',
+    };
+
     const testTracking: EpicTestTracking = {
         abTestName: test.name,
         abTestVariant: variant.name,
@@ -107,7 +119,7 @@ const buildEpic = async (
         countryCode: targeting.countryCode,
     };
 
-    return asResponse(getEpic(props), testTracking, result.debug);
+    return asResponse(getEpic(props), testTracking, result.debug, props);
 };
 
 app.get(
