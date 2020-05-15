@@ -1,18 +1,19 @@
 import express from 'express';
 import awsServerlessExpress from 'aws-serverless-express';
 import { Context } from 'aws-lambda';
-import { renderToStaticMarkup } from 'react-dom/server';
-import { extractCritical } from 'emotion-server';
-import { renderHtmlDocument } from './utils/renderHtmlDocument';
+// import { renderToStaticMarkup } from 'react-dom/server';
+// import { extractCritical } from 'emotion-server';
+// import { renderHtmlDocument } from './utils/renderHtmlDocument';
 import { fetchConfiguredEpicTests } from './api/contributionsApi';
 import { cacheAsync } from './lib/cache';
-import { JsComponent, getEpic } from './components/ContributionsEpic';
+// import { JsComponent, getEpic } from './components/ContributionsEpic';
+// import { ContributionsEpic, Props as ContributionsEpicProps } from './components/ContributionsEpic';
 import {
     EpicPageTracking,
     EpicTestTracking,
     EpicTargeting,
 } from './components/ContributionsEpicTypes';
-import testData from './components/ContributionsEpic.testData';
+// import testData from './components/ContributionsEpic.testData';
 import cors from 'cors';
 import { validatePayload } from './lib/validation';
 import { findTestAndVariant, Result, Debug } from './lib/variants';
@@ -42,26 +43,27 @@ app.get('/healthcheck', (req: express.Request, res: express.Response) => {
 });
 
 interface Response {
-    html: string;
-    css: string;
-    js: string;
+    // html: string;
+    // css: string;
+    // js: string;
+    component: string;
     meta: EpicTestTracking;
     debug?: Debug;
-    props?: any;
+    props: any;
 }
 
 const [, fetchConfiguredEpicTestsCached] = cacheAsync(fetchConfiguredEpicTests, 60);
 
-const asResponse = (
-    component: JsComponent,
-    meta: EpicTestTracking,
-    debug?: Debug,
-    props?: any,
-): Response => {
-    const { el, js } = component;
-    const { html, css } = extractCritical(renderToStaticMarkup(el));
-    return { html, css, js, meta, debug, props };
-};
+// const asResponse = (
+//     component: JsComponent,
+//     meta: EpicTestTracking,
+//     debug?: Debug,
+//     props?: any,
+// ): Response => {
+//     const { el, js } = component;
+//     const { html, css } = extractCritical(renderToStaticMarkup(el));
+//     return { html, css, js, meta, debug, props };
+// };
 
 const buildEpic = async (
     pageTracking: EpicPageTracking,
@@ -92,6 +94,7 @@ const buildEpic = async (
 
     const { test, variant } = result.result;
 
+    // TESTING ONLY
     variant.showReminderFields = {
         reminderCTA: 'Remind me in June',
         reminderDate: '2020-05-18T09:30:00',
@@ -112,24 +115,29 @@ const buildEpic = async (
         countryCode: targeting.countryCode,
     };
 
-    return asResponse(getEpic(props), testTracking, result.debug, props);
+    return {
+        component: 'ContributionsEpic',
+        meta: testTracking,
+        debug: result.debug,
+        props,
+    };
 };
 
-app.get(
-    '/epic',
-    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        try {
-            const { pageTracking, targeting } = testData;
-            const params = getQueryParams(req);
-            const epic = await buildEpic(pageTracking, targeting, params);
-            const { html, css, js } = epic ?? { html: '', css: '', js: '' };
-            const htmlDoc = renderHtmlDocument({ html, css, js });
-            res.send(htmlDoc);
-        } catch (error) {
-            next(error);
-        }
-    },
-);
+// app.get(
+//     '/epic',
+//     async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+//         try {
+//             const { pageTracking, targeting } = testData;
+//             const params = getQueryParams(req);
+//             const epic = await buildEpic(pageTracking, targeting, params);
+//             const { html, css, js } = epic ?? { html: '', css: '', js: '' };
+//             const htmlDoc = renderHtmlDocument({ html, css, js });
+//             res.send(htmlDoc);
+//         } catch (error) {
+//             next(error);
+//         }
+//     },
+// );
 
 app.post(
     '/epic',

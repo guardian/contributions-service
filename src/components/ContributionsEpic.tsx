@@ -199,18 +199,18 @@ export const ContributionsEpic: React.FC<Props> = ({
     );
 };
 
-export interface JsComponent {
-    el: JSX.Element;
-    js: string;
-}
+// export interface JsComponent {
+//     el: JSX.Element;
+//     js: string;
+// }
 
-export const getEpic = (props: Props): JsComponent => {
-    let js = '';
-    const el = <ContributionsEpic {...props} />;
+// export const getEpic = (props: Props): JsComponent => {
+//     let js = '';
+//     const el = <ContributionsEpic {...props} />;
 
-    if (props.variant.showReminderFields) {
-        js = reminderJs();
-    }
+//     if (props.variant.showReminderFields) {
+//         js = reminderJs();
+//     }
 
-    return { el, js };
-};
+//     return { el, js };
+// };
