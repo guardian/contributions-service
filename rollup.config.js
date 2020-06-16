@@ -33,7 +33,7 @@ const config = [
         output: {
             file: name,
             format: 'es',
-            sourcemap: process.env.NODE_ENV === 'production' ? false : 'inline',
+            sourcemap: process.env.ROLLUP_SOURCEMAP === 'true' ? 'inline' : false,
         },
         external: id => Object.keys(globals).some(key => id.startsWith(key)),
         plugins: [
